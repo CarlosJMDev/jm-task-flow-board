@@ -1,7 +1,6 @@
 import { db } from './firebaseConfig'
-import { doc, setDoc, collection, addDoc } from 'firebase/firestore'
+import { doc, setDoc } from 'firebase/firestore'
 
-// models.ts (opcional, para tener las interfaces en un archivo separado)
 export interface UserData {
   name: string
   email: string

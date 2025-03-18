@@ -1,9 +1,9 @@
-// store/userStore.ts
 import { defineStore } from 'pinia'
 import {
   getAuth,
   signInWithPopup,
   GoogleAuthProvider,
+  GithubAuthProvider,
   signOut,
   type User as FirebaseUser,
 } from 'firebase/auth'
@@ -28,6 +28,30 @@ export const useUserStore = defineStore('user', {
       this.error = null
       const auth = getAuth()
       const provider = new GoogleAuthProvider()
+      try {
+        const result = await signInWithPopup(auth, provider)
+        this.user = result.user
+        const userData: UserData = {
+          name: result.user.displayName || '',
+          email: result.user.email || '',
+          avatar: result.user.photoURL || '',
+        }
+        await addUser(result.user.uid, userData)
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          this.error = error.message
+        } else {
+          this.error = 'Unknown error occurred'
+        }
+      } finally {
+        this.loading = false
+      }
+    },
+    async loginWithGithub(): Promise<void> {
+      this.loading = true
+      this.error = null
+      const auth = getAuth()
+      const provider = new GithubAuthProvider()
       try {
         const result = await signInWithPopup(auth, provider)
         this.user = result.user
