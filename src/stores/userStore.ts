@@ -14,6 +14,7 @@ interface UserState {
   user: FirebaseUser | null
   loading: boolean
   error: string | null
+  role: 'creator' | 'boss' | 'collaborator'
 }
 
 export const useUserStore = defineStore('user', {
@@ -21,7 +22,13 @@ export const useUserStore = defineStore('user', {
     user: null,
     loading: false,
     error: null,
+    role: 'collaborator',
   }),
+  getters: {
+    isOwnerOrBoss(state): boolean {
+      return state.role === 'creator' || state.role === 'boss'
+    },
+  },
   actions: {
     async loginWithGoogle(): Promise<void> {
       this.loading = true
