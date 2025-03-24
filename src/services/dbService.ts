@@ -1,60 +1,84 @@
+import { collection, doc, setDoc, getDocs, updateDoc, deleteDoc, getDoc } from 'firebase/firestore'
 import { db } from './firebaseConfig'
-import { doc, setDoc } from 'firebase/firestore'
+import type { Board, List, Task, TaskState, UserData } from '@/types/index'
 
-export interface UserData {
-  name: string
-  email: string
-  avatar?: string
+export async function addBoard(boardId: string, boardData: Board): Promise<void> {
+  await setDoc(doc(db, 'boards', boardId), boardData)
 }
 
-export interface BoardData {
-  boardId: string
-  title: string
-  description?: string
+export async function addList(boardId: string, listId: string, listData: List): Promise<void> {
+  await setDoc(doc(db, 'boards', boardId, 'lists', listId), listData)
 }
 
-export interface ListData {
-  listaId: string
-  title: string
-  order: number
-}
-
-export interface TaskData {
-  cardId: string
-  title: string
-  description?: string
-  completed: boolean
-}
-
-// Función para agregar un usuario
-export async function addUser(uid: string, userData: UserData): Promise<void> {
-  const userRef = doc(db, 'users', uid)
-  await setDoc(userRef, userData)
-  console.log(`User ${uid} added`)
-}
-
-// Función para agregar un tablero
-export async function addBoard(boardId: string, boardData: BoardData): Promise<void> {
-  const boardRef = doc(db, 'boards', boardId)
-  await setDoc(boardRef, boardData)
-  console.log(`Board ${boardId} added`)
-}
-
-// Función para agregar una lista a un tablero
-export async function addList(boardId: string, listaId: string, listData: ListData): Promise<void> {
-  const listRef = doc(db, 'boards', boardId, 'listas', listaId)
-  await setDoc(listRef, listData)
-  console.log(`List ${listaId} added to board ${boardId}`)
-}
-
-// Función para agregar una tarea a una lista
 export async function addTask(
   boardId: string,
-  listaId: string,
-  cardId: string,
-  taskData: TaskData,
+  listId: string,
+  taskId: string,
+  taskData: Task,
 ): Promise<void> {
-  const taskRef = doc(db, 'boards', boardId, 'listas', listaId, 'tasks', cardId)
-  await setDoc(taskRef, taskData)
-  console.log(`Task ${cardId} added to list ${listaId} in board ${boardId}`)
+  await setDoc(doc(db, 'boards', boardId, 'lists', listId, 'tasks', taskId), taskData)
+}
+
+export async function getBoards(): Promise<Board[]> {
+  const boardsCol = collection(db, 'boards')
+  const boardSnapshot = await getDocs(boardsCol)
+  const boards: Board[] = []
+  boardSnapshot.forEach((docSnap) => {
+    // Se fuerza el tipado asumiendo que la estructura en Firestore es igual al de Board
+    boards.push({ boardId: docSnap.id, ...docSnap.data() } as Board)
+  })
+  return boards
+}
+
+export async function getTasks(boardId: string, listId: string): Promise<Task[]> {
+  const tasksCol = collection(db, 'boards', boardId, 'lists', listId, 'tasks')
+  const tasksSnapshot = await getDocs(tasksCol)
+  const tasks: Task[] = []
+  tasksSnapshot.forEach((docSnap) => {
+    const data = docSnap.data()
+    if (data.deadline && typeof data.deadline.toDate === 'function') {
+      data.deadline = data.deadline.toDate()
+    } else {
+      data.deadline = new Date(data.deadline)
+    }
+    tasks.push({ taskId: docSnap.id, ...data } as Task)
+  })
+  return tasks
+}
+
+export async function updateTaskState(
+  boardId: string,
+  fromListId: string,
+  toListId: string,
+  taskId: string,
+  newState: TaskState,
+): Promise<void> {
+  if (fromListId === toListId) {
+    const taskRef = doc(db, 'boards', boardId, 'lists', toListId, 'tasks', taskId)
+    await updateDoc(taskRef, { state: newState })
+  } else {
+    const taskRefOld = doc(db, 'boards', boardId, 'lists', fromListId, 'tasks', taskId)
+    const taskSnap = await getDoc(taskRefOld)
+    if (taskSnap.exists()) {
+      const taskData = taskSnap.data() as Task
+      taskData.state = newState
+      const taskRefNew = doc(db, 'boards', boardId, 'lists', toListId, 'tasks', taskId)
+      await setDoc(taskRefNew, taskData)
+      await deleteDoc(taskRefOld)
+    }
+  }
+}
+
+export async function updateBoard(boardId: string, data: Partial<Board>): Promise<void> {
+  const boardRef = doc(db, 'boards', boardId)
+  await updateDoc(boardRef, data)
+}
+
+export async function deleteTask(boardId: string, listId: string, taskId: string): Promise<void> {
+  const taskRef = doc(db, 'boards', boardId, 'lists', listId, 'tasks', taskId)
+  await deleteDoc(taskRef)
+}
+
+export async function addUser(uid: string, userData: UserData): Promise<void> {
+  await setDoc(doc(db, 'users', uid), userData)
 }
