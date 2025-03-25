@@ -46,8 +46,8 @@ const setDark = () => {
       type="button"
       role="radio"
       :class="[
-        'w-8 h-8 flex items-center justify-center cursor-pointer hover:*:stroke-white dark:hover:*:stroke-light-Java hover:bg-light-Java hover:rounded-full dark:hover:bg-dark-Liver',
-        theme === 'light' ? 'bg-light-desert-sand rounded-full dark:bg-dark-sidebar' : '',
+        'w-8 h-8 flex items-center justify-center cursor-pointer hover:*:stroke-white dark:hover:*:stroke-light-Java hover:bg-light-Java hover:rounded-full dark:hover:bg-dark-neptune',
+        theme === 'light' ? 'bg-light-desert-sand rounded-full dark:bg-dark-neptune p-1.5' : '',
       ]"
       aria-label="Switch to light theme"
       :aria-checked="theme === 'light'"
@@ -71,8 +71,8 @@ const setDark = () => {
       type="button"
       role="radio"
       :class="[
-        'w-8 h-8 flex items-center justify-center cursor-pointer hover:*:stroke-white dark:hover:*:stroke-light-Java hover:bg-light-Java hover:rounded-full dark:hover:bg-dark-Liver',
-        theme === 'system' ? 'bg-light-desert-sand rounded-full dark:bg-dark-sidebar' : '',
+        'w-8 h-8 flex items-center justify-center cursor-pointer hover:*:stroke-white dark:hover:*:stroke-light-Java hover:bg-light-desert-sand hover:rounded-full dark:hover:bg-dark-neptune',
+        theme === 'system' ? 'bg-light-desert-sand rounded-full dark:bg-dark-neptune p-1.5' : '',
       ]"
       aria-label="Switch to system theme"
       :aria-checked="theme === 'system'"
@@ -94,8 +94,8 @@ const setDark = () => {
       type="button"
       role="radio"
       :class="[
-        'w-8 h-8 flex items-center justify-center cursor-pointer hover:*:stroke-white dark:hover:*:stroke-light-Java hover:bg-light-Java hover:rounded-full dark:hover:bg-dark-Liver',
-        theme === 'dark' ? 'bg-light-desert-sand rounded-full dark:bg-dark-sidebar' : '',
+        'w-8 h-8 flex items-center justify-center cursor-pointer hover:*:stroke-white dark:hover:*:stroke-light-Java hover:bg-light-desert-sand hover:rounded-full dark:hover:bg-dark-neptune',
+        theme === 'dark' ? 'bg-light-desert-sand rounded-full dark:bg-dark-neptune p-1.5' : '',
       ]"
       aria-label="Switch to dark theme"
       :aria-checked="theme === 'dark'"
