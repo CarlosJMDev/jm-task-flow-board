@@ -1,2 +1,17 @@
-import 'tailwindcss' @theme {
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-light-opal: #a1d0c5;
+  --color-light-black-coral: #5b6173;
+  --color-light-snow: #faf9f9;
+  --color-light-desert-sand: #f1cab0;
+  --color-light-pastel-blue: #a6d0ce;
+
+  --color-dark-black-pearl: #041421;
+  --color-dark-fireflay: #042630;
+  --color-dark-faded-jade: #4c7273;
+  --color-dark-neptune: #86b9b0;
+  --color-dark-iron: #d0d6d6;
 }

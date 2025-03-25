@@ -20,7 +20,7 @@ const userStore = useUserStore()
 
 onAuthStateChanged(auth, (user) => {
   userStore.user = user
-  router.push('/BoardView')
+  router.push('/BoardView/1')
   console.log('push: ', router.currentRoute.value.fullPath)
 })
 

@@ -19,7 +19,7 @@ export default defineComponent({
     const signInWithGithub = async () => {
       await userStore.loginWithGithub()
       if (userStore.user) {
-        window.location.href = '/BoardView'
+        window.location.href = '/BoardView/1'
       }
     }
 

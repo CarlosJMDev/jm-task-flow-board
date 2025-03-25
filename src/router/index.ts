@@ -12,9 +12,10 @@ const router = createRouter({
       component: AuthView,
     },
     {
-      path: '/BoardView',
+      path: '/BoardView/:id',
       name: 'boardview',
       component: BoardView,
+      props: true,
       meta: { requiresAuth: true },
     },
   ],
