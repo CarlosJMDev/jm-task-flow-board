@@ -18,7 +18,7 @@ const showCreateBoardModal = ref(false)
 
 // Filtros basados en las propiedades de cada board:
 const generalBoards = computed<Board[]>(() =>
-  boardStore.boards.filter((board) => !board.isFavorite && !board.isFinished),
+  boardStore.boards.filter((board) => !board.isFinished),
 )
 
 const favoriteBoards = computed<Board[]>(() =>
@@ -57,6 +57,11 @@ const selectBoard = (board: Board): void => {
   router.push({ name: 'boardview', params: { id: board.boardId } })
 }
 
+const toggleFavorite = async (board: Board): Promise<void> => {
+  const newFav = !board.isFavorite
+  await boardStore.updateBoard(board.boardId, { isFavorite: newFav })
+}
+
 const logout = (): void => {
   router.push({ name: 'auth' })
   userStore.logout()
@@ -65,7 +70,7 @@ const logout = (): void => {
 
 <template>
   <aside
-    class="fixed top-0 left-0 h-full bg-light-pastel-blue dark:bg-dark-sidebar dark:text-white transition-all duration-300"
+    class="fixed top-0 left-0 h-full bg-light-pastel-blue dark:bg-dark-fireflay dark:text-white transition-all duration-300"
     :class="isSidebarOpen ? 'w-60' : 'w-16'"
   >
     <div class="relative flex flex-col h-full">
@@ -79,25 +84,28 @@ const logout = (): void => {
       <!-- Sección Proyectos Generales -->
       <div class="p-2 flex flex-col gap-2">
         <h3
-          class="text-sm font-bold flex gap-3 justify-center items-center hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded py-1 cursor-pointer"
+          class="text-sm font-bold flex gap-3 items-center hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded py-1 cursor-pointer"
+          :class="isSidebarOpen ? 'justify-between' : 'justify-center'"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="lucide lucide-folder"
-          >
-            <path
-              d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
-            />
-          </svg>
-          <span v-if="isSidebarOpen">Proyectos</span>
+          <div class="flex gap-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-folder"
+            >
+              <path
+                d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
+              />
+            </svg>
+            <span v-if="isSidebarOpen">Proyectos</span>
+          </div>
           <button
             v-if="isSidebarOpen"
             @click.stop="showCreateBoardModal = true"
@@ -117,12 +125,34 @@ const logout = (): void => {
           </button>
         </h3>
         <template v-if="isSidebarOpen">
-          <div v-for="board in displayedGeneral" :key="board.boardId">
+          <div
+            v-for="board in displayedGeneral"
+            :key="board.boardId"
+            class="flex items-center justify-between hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded-xl"
+          >
             <button
               @click="selectBoard(board)"
-              class="w-full p-2 hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded flex gap-3 cursor-pointer"
+              class="w-full p-2 rounded flex gap-3 cursor-pointer"
             >
               <p v-if="isSidebarOpen">{{ board.title }}</p>
+            </button>
+            <button @click.stop="toggleFavorite(board)" class="p-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                :fill="board.isFavorite ? 'red' : 'none'"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-heart cursor-pointer"
+              >
+                <path
+                  d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
+                />
+              </svg>
             </button>
           </div>
           <button
@@ -154,7 +184,8 @@ const logout = (): void => {
       <!-- Sección Favoritos -->
       <div class="p-2">
         <h3
-          class="text-sm font-bold flex gap-3 justify-center items-center hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded py-1 cursor-pointer"
+          class="text-sm font-bold flex gap-3 items-center hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded py-1 cursor-pointer"
+          :class="isSidebarOpen ? 'justify-start' : 'justify-center'"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -175,42 +206,45 @@ const logout = (): void => {
           <p v-if="isSidebarOpen">Favoritos</p>
         </h3>
         <div v-for="board in displayedFavorites" :key="board.boardId">
-          <button
-            @click="selectBoard(board)"
-            class="w-full p-2 hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded flex gap-3 cursor-pointer"
-          >
-            <p v-if="isSidebarOpen">{{ board.title }}</p>
-          </button>
+          <template v-if="isSidebarOpen">
+            <button
+              @click="selectBoard(board)"
+              class="w-full p-2 hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded-xl flex gap-3 cursor-pointer"
+            >
+              <p v-if="isSidebarOpen">{{ board.title }}</p>
+            </button>
+            <button
+              v-if="favoriteBoards.length > 3"
+              @click="toggleShowFavorites"
+              class="w-full p-2 hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded flex gap-3 cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-chevron-down"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+              <p v-if="isSidebarOpen">
+                {{ showAllFavorites ? 'Ver menos' : 'Ver más' }}
+              </p>
+            </button>
+          </template>
         </div>
-        <button
-          v-if="favoriteBoards.length > 3"
-          @click="toggleShowFavorites"
-          class="w-full p-2 hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded flex gap-3 cursor-pointer"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="lucide lucide-chevron-down"
-          >
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-          <p v-if="isSidebarOpen">
-            {{ showAllFavorites ? 'Ver menos' : 'Ver más' }}
-          </p>
-        </button>
       </div>
 
       <!-- Sección Finalizados -->
       <div class="p-2">
         <h3
-          class="text-sm font-bold flex gap-3 justify-center items-center hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded py-1 cursor-pointer"
+          class="text-sm font-bold flex gap-3 items-center hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded py-1 cursor-pointer"
+          :class="isSidebarOpen ? 'justify-start' : 'justify-center'"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -229,13 +263,34 @@ const logout = (): void => {
           </svg>
           <p v-if="isSidebarOpen">Finalizados</p>
         </h3>
-        <div v-for="board in displayedFinished" :key="board.boardId">
-          <button
-            @click="selectBoard(board)"
-            class="w-full p-2 hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded flex gap-3 cursor-pointer"
-          >
-            <p v-if="isSidebarOpen">{{ board.title }}</p>
-          </button>
+        <div
+          v-for="board in displayedFinished"
+          :key="board.boardId"
+          class="flex items-center justify-between hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded-xl"
+        >
+          <template v-if="isSidebarOpen">
+            <button @click="selectBoard(board)" class="w-full p-2 flex gap-3 cursor-pointer">
+              <p v-if="isSidebarOpen">{{ board.title }}</p>
+            </button>
+            <button @click.stop="toggleFavorite(board)" class="p-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                :fill="board.isFavorite ? 'red' : 'none'"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-heart"
+              >
+                <path
+                  d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
+                />
+              </svg>
+            </button>
+          </template>
         </div>
         <button
           v-if="finishedBoards.length > 3"
