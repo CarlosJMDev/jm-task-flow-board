@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, inject } from 'vue'
 import draggable from 'vuedraggable'
 import BaseLayout from '@/layouts/BaseLayout.vue'
 import { useBoardStore } from '@/stores/boardStore'
@@ -7,28 +7,25 @@ import CreateTaskModal from '@/components/CreateTaskModal.vue'
 import TaskDetailsModal from '@/components/TaskDetailsModal.vue'
 import type { Task, TaskState, List } from '@/types/index'
 
+const i18n = inject('i18n') as { t: (key: string) => string; locale: string }
+
 const boardStore = useBoardStore()
 const currentBoard = computed(() => boardStore.currentBoard)
 
-// Variables para controlar la visibilidad de los modales
 const showCreateTaskModal = ref(false)
 const showTaskDetailsModal = ref(false)
 const selectedTask = ref<Task | null>(null)
 
-// Ordenamos las listas por "order" si existen; si no, devolvemos un arreglo vacío
 const boardLists = computed<List[]>(() =>
   currentBoard.value && currentBoard.value.lists
     ? [...currentBoard.value.lists].sort((a, b) => a.order - b.order)
     : [],
 )
 
-// Función para abrir el modal de creación de tarea.
-// La nueva tarea se asignará a la lista correspondiente a "inicio"
 const openCreateTaskModal = (): void => {
   showCreateTaskModal.value = true
 }
 
-// Función para abrir el modal de detalles de tarea
 const openTaskModal = (task: Task): void => {
   selectedTask.value = task
   showTaskDetailsModal.value = true
@@ -42,8 +39,11 @@ const deleteTask = async (listId: string, taskId: string): Promise<void> => {
   }
 }
 
-// Función para manejar drag & drop de tareas
-const onDragEnd = (event: { from: HTMLElement; to: HTMLElement; item: HTMLElement }): void => {
+const onDragEnd = async (event: {
+  from: HTMLElement
+  to: HTMLElement
+  item: HTMLElement
+}): void => {
   const { from, to, item } = event
   if (from !== to) {
     const fromListId = from.getAttribute('data-list-id') || ''
@@ -57,7 +57,13 @@ const onDragEnd = (event: { from: HTMLElement; to: HTMLElement; item: HTMLElemen
           ? 'done'
           : 'start'
     if (currentBoard.value && fromListId && toListId && taskId) {
-      boardStore.updateTaskState(currentBoard.value.boardId, fromListId, toListId, taskId, newState)
+      await boardStore.updateTaskState(
+        currentBoard.value.boardId,
+        fromListId,
+        toListId,
+        taskId,
+        newState,
+      )
     }
   }
 }
@@ -68,7 +74,7 @@ const onDragEnd = (event: { from: HTMLElement; to: HTMLElement; item: HTMLElemen
     <div class="max-w-[min(80%,1200px)] h-full flex flex-col">
       <header class="w-full p-4 border-b dark:text-white">
         <h1 class="text-2xl font-bold">
-          {{ currentBoard ? currentBoard.title : 'Selecciona un proyecto' }}
+          {{ currentBoard ? currentBoard.title : i18n.t('board.select') }}
         </h1>
         <p class="text-light-black-coral dark:text-dark-iron">
           {{ currentBoard ? currentBoard.description : '' }}
@@ -77,7 +83,7 @@ const onDragEnd = (event: { from: HTMLElement; to: HTMLElement; item: HTMLElemen
 
       <div v-if="currentBoard" class="p-4 flex justify-end">
         <button @click="openCreateTaskModal" class="px-4 py-2 bg-green-600 text-white rounded">
-          + Nueva Tarea
+          + {{ i18n.t('task.newTask') }}
         </button>
       </div>
 
@@ -88,7 +94,7 @@ const onDragEnd = (event: { from: HTMLElement; to: HTMLElement; item: HTMLElemen
           class="flex flex-col bg-light-pastel-blue dark:bg-dark-neptune p-4 rounded min-w-[200px]"
           :data-list-id="list.listId"
         >
-          <h2 class="font-bold mb-2 capitalize">{{ list.title }}</h2>
+          <h2 class="font-bold mb-2 capitalize">{{ i18n.t(`task.state.${list.title}`) }}</h2>
           <div :data-list-id="list.listId" class="flex-1 min-h-[150px]">
             <draggable
               v-model="list.tasks"
@@ -135,12 +141,12 @@ const onDragEnd = (event: { from: HTMLElement; to: HTMLElement; item: HTMLElemen
             </draggable>
           </div>
           <div v-if="!(list.tasks && list.tasks.length)" class="text-sm text-gray-500 italic">
-            Sin tareas
+            {{ i18n.t('task.empty') }}
           </div>
         </div>
       </main>
       <p v-else class="p-4 dark:text-dark-iron">
-        Por favor, selecciona un proyecto desde el sidebar.
+        {{ i18n.t('board.selectSidebar') }}
       </p>
     </div>
 
@@ -150,14 +156,14 @@ const onDragEnd = (event: { from: HTMLElement; to: HTMLElement; item: HTMLElemen
         @click="boardStore.updateBoard(currentBoard.boardId, { isFinished: true })"
         class="px-4 py-2 bg-blue-600 text-white rounded"
       >
-        Marcar como Acabado
+        {{ i18n.t('board.endBoard') }}
       </button>
       <button
         v-else
         @click="boardStore.updateBoard(currentBoard.boardId, { isFinished: false })"
         class="px-4 py-2 bg-gray-600 text-white rounded"
       >
-        Reabrir Proyecto
+        {{ i18n.t('board.reopen') }}
       </button>
     </div>
 

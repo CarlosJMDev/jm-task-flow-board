@@ -1,0 +1,55 @@
+export const cat = {
+  common: {
+    title: 'Títol',
+    description: 'Descripció',
+    creationDate: 'Data de creació',
+    deadline: 'Data límit',
+    cancel: 'Cancel·lar',
+    create: 'Crear',
+  },
+  auth: {
+    welcome: 'Benvingut',
+    sign: 'Inicia sessió per continuar',
+    signGoogle: 'Continua amb Google',
+    signGithub: 'Continua amb Github',
+    or: 'o',
+  },
+  sidebar: {
+    projects: 'Projectes',
+    favorites: 'Preferits',
+    ended: 'Finalitzats',
+    logout: 'Tanca sessió',
+  },
+  projects: {
+    add: 'Afegir Projecte',
+    empty: 'Encara no hi ha projectes',
+  },
+  task: {
+    add: 'Afegir Tasca',
+    newTask: 'Nova Tasca',
+    details: 'Detalls de la Tasca',
+    empty: 'Encara no hi ha tasques',
+    state: {
+      start: 'Inici',
+      inprocess: 'En procés',
+      inreview: 'En revisió',
+      done: 'Completada',
+      actual: 'Estat actual',
+      change: 'Canviar estat',
+      update: 'Actualitzar estat',
+    },
+    permission: 'No tens permís per marcar aquesta tasca com a completada',
+  },
+  board: {
+    select: 'Selecciona un projecte',
+    selectSidebar: 'Si us plau, selecciona un projecte des de la barra lateral',
+    endBoard: 'Marcar com a finalitzat',
+    reopen: 'Reobrir projecte',
+  },
+  alert: 'Encara no s’ha seleccionat cap projecte o no hi ha llistes amb estat inicial definit',
+  limit: {
+    seeLess: 'Veure menys...',
+    seeMore: 'Veure més...',
+  },
+  footer: 'Fet amb Vuejs amb 💚',
+}

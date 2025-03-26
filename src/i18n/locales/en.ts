@@ -1,0 +1,55 @@
+export const en = {
+  common: {
+    title: 'Title',
+    description: 'Description',
+    creationDate: 'Creation Date',
+    deadline: 'Deadline',
+    cancel: 'Cancel',
+    create: 'Create',
+  },
+  auth: {
+    welcome: 'Welcome',
+    sign: 'Sign in to continue',
+    signGoogle: 'Continue with Google',
+    signGithub: 'Continue with Github',
+    or: 'or',
+  },
+  sidebar: {
+    projects: 'Projects',
+    favorites: 'Favorites',
+    ended: 'Finishes',
+    logout: 'Logout',
+  },
+  projects: {
+    add: 'Add Project',
+    empty: 'No projects yet',
+  },
+  task: {
+    add: 'Add Task',
+    newTask: 'New Task',
+    details: 'Task Details',
+    empty: 'No tasks yet',
+    state: {
+      start: 'Start',
+      inprocess: 'In process',
+      inreview: 'In review',
+      done: 'Done',
+      actual: 'Actual state',
+      change: 'Change state',
+      update: 'Update state',
+    },
+    permission: "You don't have permission to mark this task as done",
+  },
+  board: {
+    select: 'Select a project',
+    selectSidebar: 'Please, select a project from the sidebar',
+    endBoard: 'Mark as finished',
+    reopen: 'Reopen project',
+  },
+  alert: 'Any project selected yet or any list with start state defined',
+  limit: {
+    seeLess: 'See less...',
+    seeMore: 'See more...',
+  },
+  footer: 'Made in Vuejs with 💚',
+}

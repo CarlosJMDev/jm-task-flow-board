@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBoardStore } from '@/stores/boardStore'
 import CreateBoardModal from '@/components/CreateBoardModal.vue'
 import type { Board } from '@/types/index'
 import { useUserStore } from '../stores/userStore'
+
+const i18n = inject('i18n') as { t: (key: string) => string; locale: string }
 
 const boardStore = useBoardStore()
 const userStore = useUserStore()
@@ -29,7 +31,7 @@ const finishedBoards = computed<Board[]>(() =>
   boardStore.boards.filter((board) => board.isFinished),
 )
 
-// Ejemplo de limitar a 3 elementos y permitir "Ver más":
+// Limitar a 3 elementos y permitir "Ver más":
 const displayedGeneral = computed<Board[]>(() =>
   showAllGeneral.value ? generalBoards.value : generalBoards.value.slice(0, 3),
 )
@@ -81,10 +83,9 @@ const logout = (): void => {
         ☰
       </button>
 
-      <!-- Sección Proyectos Generales -->
       <div class="p-2 flex flex-col gap-2">
         <h3
-          class="text-sm font-bold flex gap-3 items-center hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded py-1 cursor-pointer"
+          class="text-sm font-bold flex gap-3 items-center hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded py-1 px-2 cursor-pointer"
           :class="isSidebarOpen ? 'justify-between' : 'justify-center'"
         >
           <div class="flex gap-3">
@@ -104,7 +105,7 @@ const logout = (): void => {
                 d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
               />
             </svg>
-            <span v-if="isSidebarOpen">Proyectos</span>
+            <span v-if="isSidebarOpen">{{ i18n.t('sidebar.projects') }}</span>
           </div>
           <button
             v-if="isSidebarOpen"
@@ -175,16 +176,15 @@ const logout = (): void => {
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
             <p v-if="isSidebarOpen">
-              {{ showAllGeneral ? 'Ver menos' : 'Ver más' }}
+              {{ showAllGeneral ? i18n.t('limit.seeLess') : i18n.t('limit.seeMore') }}
             </p>
           </button>
         </template>
       </div>
 
-      <!-- Sección Favoritos -->
       <div class="p-2">
         <h3
-          class="text-sm font-bold flex gap-3 items-center hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded py-1 cursor-pointer"
+          class="text-sm font-bold flex gap-3 items-center hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded py-1 cursor-pointer px-2"
           :class="isSidebarOpen ? 'justify-start' : 'justify-center'"
         >
           <svg
@@ -203,7 +203,7 @@ const logout = (): void => {
               d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
             />
           </svg>
-          <p v-if="isSidebarOpen">Favoritos</p>
+          <p v-if="isSidebarOpen">{{ i18n.t('sidebar.favorites') }}</p>
         </h3>
         <div v-for="board in displayedFavorites" :key="board.boardId">
           <template v-if="isSidebarOpen">
@@ -233,17 +233,16 @@ const logout = (): void => {
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
               <p v-if="isSidebarOpen">
-                {{ showAllFavorites ? 'Ver menos' : 'Ver más' }}
+                {{ showAllFavorites ? i18n.t('limit.seeLess') : i18n.t('limit.seeMore') }}
               </p>
             </button>
           </template>
         </div>
       </div>
 
-      <!-- Sección Finalizados -->
       <div class="p-2">
         <h3
-          class="text-sm font-bold flex gap-3 items-center hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded py-1 cursor-pointer"
+          class="text-sm font-bold flex gap-3 items-center hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded py-1 cursor-pointer px-2"
           :class="isSidebarOpen ? 'justify-start' : 'justify-center'"
         >
           <svg
@@ -261,7 +260,7 @@ const logout = (): void => {
             <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z" />
             <path d="m9 10 2 2 4-4" />
           </svg>
-          <p v-if="isSidebarOpen">Finalizados</p>
+          <p v-if="isSidebarOpen">{{ i18n.t('sidebar.ended') }}</p>
         </h3>
         <div
           v-for="board in displayedFinished"
@@ -312,12 +311,11 @@ const logout = (): void => {
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
           <p v-if="isSidebarOpen">
-            {{ showAllFinished ? 'Ver menos' : 'Ver más' }}
+            {{ showAllFinished ? i18n.t('limit.seeLess') : i18n.t('limit.seeMore') }}
           </p>
         </button>
       </div>
 
-      <!-- Botón de Logout al final -->
       <div class="mt-auto p-2">
         <button
           @click="logout"
@@ -339,7 +337,7 @@ const logout = (): void => {
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
-          <p v-if="isSidebarOpen">Logout</p>
+          <p v-if="isSidebarOpen">{{ i18n.t('sidebar.logout') }}</p>
         </button>
       </div>
     </div>

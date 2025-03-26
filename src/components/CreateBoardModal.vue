@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { useBoardStore } from '@/stores/boardStore'
 import type { Board } from '@/types/index'
+
+const i18n = inject('i18n') as { t: (key: string) => string; locale: string }
 
 const emit = defineEmits<{ (e: 'closeModal'): void }>()
 
@@ -33,7 +35,9 @@ const submitForm = async () => {
       <h2 class="text-xl font-bold mb-4">Nuevo Proyecto</h2>
       <form @submit.prevent="submitForm">
         <div class="mb-4">
-          <label for="title" class="block text-sm font-medium mb-1">Título</label>
+          <label for="title" class="block text-sm font-medium mb-1">{{
+            i18n.t('common.title')
+          }}</label>
           <input
             id="title"
             type="text"
@@ -43,7 +47,9 @@ const submitForm = async () => {
           />
         </div>
         <div class="mb-4">
-          <label for="description" class="block text-sm font-medium mb-1">Descripción</label>
+          <label for="description" class="block text-sm font-medium mb-1">{{
+            i18n.t('common.description')
+          }}</label>
           <textarea
             id="description"
             v-model="description"
@@ -52,7 +58,9 @@ const submitForm = async () => {
           ></textarea>
         </div>
         <div class="mb-4">
-          <label for="creationDate" class="block text-sm font-medium mb-1">Fecha de Creación</label>
+          <label for="creationDate" class="block text-sm font-medium mb-1">{{
+            i18n.t('common.creationDate')
+          }}</label>
           <input
             id="creationDate"
             type="date"
@@ -63,9 +71,11 @@ const submitForm = async () => {
         </div>
         <div class="flex justify-end gap-2">
           <button type="button" @click="closeModal" class="px-4 py-2 border rounded">
-            Cancelar
+            {{ i18n.t('common.cancel') }}
           </button>
-          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Crear</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
+            {{ i18n.t('common.create') }}
+          </button>
         </div>
       </form>
     </div>

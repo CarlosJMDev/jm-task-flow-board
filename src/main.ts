@@ -5,7 +5,7 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
-import i18n from './plugins/i18n'
+import i18n from './i18n/index'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from './services/firebaseConfig'
 import { useUserStore } from './stores/userStore'

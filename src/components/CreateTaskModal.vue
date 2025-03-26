@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { useBoardStore } from '@/stores/boardStore'
 import type { List, Task } from '@/types/index'
+
+const i18n = inject('i18n') as { t: (key: string) => string; locale: string }
 
 const props = defineProps<{
   boardId: string | undefined
@@ -22,10 +24,10 @@ const closeModal = (): void => {
 
 const submitForm = async (): Promise<void> => {
   if (!props.boardId || !props.list) {
-    alert('No se ha seleccionado un board o la lista de "inicio" no está definida.')
+    alert(i18n.t('alert'))
     return
   }
-  // Genera un ID para la tarea
+
   const taskId = Date.now().toString()
   const newTask: Task = {
     taskId,
@@ -46,10 +48,12 @@ const submitForm = async (): Promise<void> => {
     <div
       class="bg-light-pastel-blue dark:bg-dark-fireflay dark:text-dark-iron p-6 rounded-lg shadow-lg z-10 w-80"
     >
-      <h2 class="text-xl font-bold mb-4">Nueva Tarea</h2>
+      <h2 class="text-xl font-bold mb-4">{{ i18n.t('task.newTask') }}</h2>
       <form @submit.prevent="submitForm">
         <div class="mb-4">
-          <label for="title" class="block text-sm font-medium mb-1">Título</label>
+          <label for="title" class="block text-sm font-medium mb-1">{{
+            i18n.t('common.title')
+          }}</label>
           <input
             id="title"
             type="text"
@@ -60,7 +64,9 @@ const submitForm = async (): Promise<void> => {
           />
         </div>
         <div class="mb-4">
-          <label for="description" class="block text-sm font-medium mb-1">Descripción</label>
+          <label for="description" class="block text-sm font-medium mb-1">{{
+            i18n.t('common.description')
+          }}</label>
           <textarea
             id="description"
             placeholder="Descripción de la tarea"
@@ -70,7 +76,9 @@ const submitForm = async (): Promise<void> => {
           ></textarea>
         </div>
         <div class="mb-4">
-          <label for="deadline" class="block text-sm font-medium mb-1">Fecha Límite</label>
+          <label for="deadline" class="block text-sm font-medium mb-1">{{
+            i18n.t('common.deadline')
+          }}</label>
           <input
             id="deadline"
             type="date"
@@ -82,10 +90,10 @@ const submitForm = async (): Promise<void> => {
         </div>
         <div class="flex justify-end gap-2">
           <button type="button" @click="closeModal" class="px-4 py-2 border rounded">
-            Cancelar
+            {{ i18n.t('common.cancel') }}
           </button>
           <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
-            Crear Tarea
+            {{ i18n.t('common.create') }}
           </button>
         </div>
       </form>

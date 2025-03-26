@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import { useBoardStore } from '@/stores/boardStore'
 import type { Task, TaskState } from '@/types/index'
+
+const i18n = inject('i18n') as { t: (key: string) => string; locale: string }
 
 const props = defineProps<{
   task: Task
@@ -22,7 +24,7 @@ const closeModal = (): void => {
 const submitChange = async (): Promise<void> => {
   // Validar que solo el usuario con rol adecuado pueda pasar a "done"
   if (newState.value === 'done' && !userStore.isOwnerOrBoss) {
-    alert("You don't have permission to mark this task as done.")
+    alert(i18n.t('task.permission'))
     return
   }
   if (props.boardId) {
@@ -62,15 +64,22 @@ const submitChange = async (): Promise<void> => {
     <div
       class="bg-light-pastel-blue dark:bg-dark-fireflay p-6 rounded-lg z-10 w-80 shadow-lg dark:text-dark-iron"
     >
-      <h2 class="text-xl font-bold mb-4">Task Details</h2>
-      <p class="mb-2"><strong>Título:</strong> {{ task.title }}</p>
-      <p class="mb-2"><strong>Descripción:</strong> {{ task.description }}</p>
+      <h2 class="text-xl font-bold mb-4">{{ i18n.t('task.details') }}</h2>
       <p class="mb-2">
-        <strong>Deadline:</strong> {{ new Date(task.deadline).toLocaleDateString() }}
+        <strong>{{ i18n.t('common.title') }}:</strong> {{ task.title }}
       </p>
-      <p class="mb-4"><strong>Estado Actual:</strong> {{ task.state }}</p>
+      <p class="mb-2">
+        <strong>{{ i18n.t('common.description') }}:</strong> {{ task.description }}
+      </p>
+      <p class="mb-2">
+        <strong>{{ i18n.t('common.deadline') }}:</strong>
+        {{ new Date(task.deadline).toLocaleDateString() }}
+      </p>
+      <p class="mb-4">
+        <strong>{{ i18n.t('task.state.actual') }}:</strong> {{ i18n.t(`task.state.${task.state}`) }}
+      </p>
       <div class="mb-4">
-        <label class="block text-sm font-medium mb-1">Cambiar Estado</label>
+        <label class="block text-sm font-medium mb-1">{{ i18n.t('task.state.change') }}</label>
         <select
           v-model="newState"
           class="w-full p-2 border rounded bg-light-pastel-blue dark:bg-dark-fireflay"
@@ -79,33 +88,35 @@ const submitChange = async (): Promise<void> => {
             value="start"
             class="checked:bg-light-desert-sand dark:checked:bg-dark-faded-jade"
           >
-            start
+            {{ i18n.t('task.state.start') }}
           </option>
           <option
             value="inprocess"
             class="checked:bg-light-desert-sand dark:checked:bg-dark-faded-jade"
           >
-            in process
+            {{ i18n.t('task.state.inprocess') }}
           </option>
           <option
             value="inreview"
             class="checked:bg-light-desert-sand dark:checked:bg-dark-faded-jade"
           >
-            in review
+            {{ i18n.t('task.state.inreview') }}
           </option>
           <option value="done" class="checked:bg-light-desert-sand dark:checked:bg-dark-faded-jade">
-            done
+            {{ i18n.t('task.state.done') }}
           </option>
         </select>
       </div>
       <div class="flex justify-end gap-2">
-        <button type="button" @click="closeModal" class="px-4 py-2 border rounded">Cancelar</button>
+        <button type="button" @click="closeModal" class="px-4 py-2 border rounded">
+          {{ i18n.t('common.cancel') }}
+        </button>
         <button
           type="button"
           @click="submitChange"
           class="px-4 py-2 bg-blue-600 text-white rounded"
         >
-          Actualizar Estado
+          {{ i18n.t('task.state.update') }}
         </button>
       </div>
     </div>
