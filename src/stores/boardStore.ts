@@ -9,7 +9,8 @@ import {
   deleteTask as dbDeleteTask,
   updateBoard as dbUpdateBoard,
 } from '@/services/dbService'
-import type { Board, List, Task, TaskState } from '@/types/index'
+import type { Board, List, Task, TaskState, InvitedUser } from '@/types/index'
+import { useUserStore } from './userStore'
 
 export const useBoardStore = defineStore('board', {
   state: () => ({
@@ -19,8 +20,16 @@ export const useBoardStore = defineStore('board', {
   actions: {
     async createBoard(boardData: Board): Promise<void> {
       try {
+        const userStore = useUserStore()
+        const creatorEmail = userStore.user?.email
+        if (!creatorEmail) {
+          throw new Error('No hay usuario autenticado.')
+        }
+        // Asignamos el correo del creador si aún no se ha establecido.
+        boardData.creatorId = boardData.creatorId || creatorEmail
         boardData.isFavorite = boardData.isFavorite || false
         boardData.isFinished = boardData.isFinished || false
+        boardData.invitedUsers = boardData.invitedUsers || []
         if (!boardData.lists) {
           boardData.lists = [
             { listId: boardData.boardId + '_start', title: 'start', order: 1, tasks: [] },
@@ -40,9 +49,13 @@ export const useBoardStore = defineStore('board', {
         console.error('Error creating board:', error)
       }
     },
-    async loadBoards(): Promise<void> {
+    async loadBoards(email: string): Promise<void> {
       try {
-        const boardsData: Board[] = await getBoards()
+        if (!email) {
+          console.error('Usuario no autenticado.')
+          return
+        }
+        const boardsData: Board[] = await getBoards(email)
         await Promise.all(
           boardsData.map(async (board) => {
             board.isFavorite = board.isFavorite || false
@@ -147,6 +160,30 @@ export const useBoardStore = defineStore('board', {
         }
       } catch (error) {
         console.error('Error updating board:', error)
+      }
+    },
+    async inviteUser(
+      boardId: string,
+      invitedUser: { userId: string; role: 'boss' | 'collaborator' },
+    ): Promise<void> {
+      try {
+        const board = this.boards.find((b) => b.boardId === boardId)
+        if (!board) return
+        const invitedUsers = board.invitedUsers ? [...board.invitedUsers] : []
+        const exists = invitedUsers.find((u) => u.userId === invitedUser.userId)
+        if (!exists) {
+          invitedUsers.push(invitedUser)
+        } else {
+          exists.role = invitedUser.role
+        }
+
+        const invitedUserEmails = board.invitedUserEmails ? [...board.invitedUserEmails] : []
+        if (!invitedUserEmails.includes(invitedUser.userId)) {
+          invitedUserEmails.push(invitedUser.userId)
+        }
+        await this.updateBoard(boardId, { invitedUsers, invitedUserEmails })
+      } catch (error) {
+        console.error('Error inviting user:', error)
       }
     },
   },

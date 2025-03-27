@@ -1,4 +1,15 @@
-import { collection, doc, setDoc, getDocs, updateDoc, deleteDoc, getDoc } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  getDoc,
+  query,
+  or,
+  where,
+} from 'firebase/firestore'
 import { db } from './firebaseConfig'
 import type { Board, List, Task, TaskState, UserData } from '@/types/index'
 
@@ -19,9 +30,15 @@ export async function addTask(
   await setDoc(doc(db, 'boards', boardId, 'lists', listId, 'tasks', taskId), taskData)
 }
 
-export async function getBoards(): Promise<Board[]> {
+export async function getBoards(email: string): Promise<Board[]> {
   const boardsCol = collection(db, 'boards')
-  const boardSnapshot = await getDocs(boardsCol)
+
+  const q = query(
+    boardsCol,
+    or(where('creatorId', '==', email), where('invitedUserEmails', 'array-contains', email)),
+  )
+
+  const boardSnapshot = await getDocs(q)
   const boards: Board[] = []
   boardSnapshot.forEach((docSnap) => {
     // Se fuerza el tipado asumiendo que la estructura en Firestore es igual al de Board

@@ -5,15 +5,19 @@ import BaseLayout from '@/layouts/BaseLayout.vue'
 import { useBoardStore } from '@/stores/boardStore'
 import CreateTaskModal from '@/components/CreateTaskModal.vue'
 import TaskDetailsModal from '@/components/TaskDetailsModal.vue'
-import type { Task, TaskState, List } from '@/types/index'
+import InviteUserModal from '@/components/InviteUserModal.vue'
+import type { Task, TaskState, List, InvitedUser } from '@/types/index'
+import { useUserStore } from '@/stores/userStore'
 
 const i18n = inject('i18n') as { t: (key: string) => string; locale: string }
 
+const userStore = useUserStore()
 const boardStore = useBoardStore()
 const currentBoard = computed(() => boardStore.currentBoard)
 
 const showCreateTaskModal = ref(false)
 const showTaskDetailsModal = ref(false)
+const showInviteUserModal = ref(false)
 const selectedTask = ref<Task | null>(null)
 
 const boardLists = computed<List[]>(() =>
@@ -36,6 +40,19 @@ const deleteTask = async (listId: string, taskId: string): Promise<void> => {
     if (confirm('¿Estás seguro de eliminar esta tarea?')) {
       await boardStore.deleteTask(currentBoard.value.boardId, listId, taskId)
     }
+  }
+}
+
+const changeInvitedRole = async (
+  invited: InvitedUser,
+  newRole: 'boss' | 'collaborator',
+): Promise<void> => {
+  if (currentBoard.value) {
+    // Actualizamos el array de invitedUsers en el board
+    const updatedInvited = currentBoard.value.invitedUsers?.map((user) =>
+      user.userId === invited.userId ? { ...user, role: newRole } : user,
+    )
+    await boardStore.updateBoard(currentBoard.value.boardId, { invitedUsers: updatedInvited })
   }
 }
 
@@ -81,9 +98,15 @@ const onDragEnd = async (event: {
         </p>
       </header>
 
-      <div v-if="currentBoard" class="p-4 flex justify-end">
+      <div v-if="currentBoard" class="p-4 flex justify-end gap-4">
         <button @click="openCreateTaskModal" class="px-4 py-2 bg-green-600 text-white rounded">
           + {{ i18n.t('task.newTask') }}
+        </button>
+        <button
+          @click="showInviteUserModal = true"
+          class="px-4 py-2 bg-green-600 text-white rounded"
+        >
+          {{ i18n.t('users.add') }}
         </button>
       </div>
 
@@ -144,6 +167,36 @@ const onDragEnd = async (event: {
             {{ i18n.t('task.empty') }}
           </div>
         </div>
+        <!-- Sección de usuarios invitados (sólo se muestra si hay invitados) -->
+        <div
+          v-if="currentBoard && currentBoard.invitedUsers && currentBoard.invitedUsers.length"
+          class="p-4 border-t mt-4"
+        >
+          <!-- <h3 class="text-lg font-bold mb-2">{{ i18n.t('board.invitedUsers') }}</h3> -->
+          <h3 class="text-lg font-bold mb-2">Users</h3>
+          <ul>
+            <li
+              v-for="invited in currentBoard.invitedUsers"
+              :key="invited.userId"
+              class="flex items-center gap-2"
+            >
+              <span
+                >{{ invited.userId }} - <em>{{ invited.role }}</em></span
+              >
+              <!-- Si el usuario actual es el creador, permite cambiar el rol -->
+              <template v-if="currentBoard.creatorId === userStore.user?.uid">
+                <select
+                  v-model="invited.role"
+                  @change="changeInvitedRole(invited, invited.role)"
+                  class="border rounded p-1"
+                >
+                  <option value="collaborator">{{ i18n.t('board.collaborator') }}</option>
+                  <option value="boss">{{ i18n.t('board.boss') }}</option>
+                </select>
+              </template>
+            </li>
+          </ul>
+        </div>
       </main>
       <p v-else class="p-4 dark:text-dark-iron">
         {{ i18n.t('board.selectSidebar') }}
@@ -179,6 +232,12 @@ const onDragEnd = async (event: {
       :task="selectedTask"
       :boardId="currentBoard?.boardId"
       @close-modal="showTaskDetailsModal = false"
+    />
+
+    <InviteUserModal
+      v-if="showInviteUserModal && currentBoard"
+      :boardId="currentBoard.boardId"
+      @close="showInviteUserModal = false"
     />
   </BaseLayout>
 </template>

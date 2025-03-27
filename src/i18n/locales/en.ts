@@ -46,6 +46,17 @@ export const en = {
     endBoard: 'Mark as finished',
     reopen: 'Reopen project',
   },
+  users: {
+    add: 'Add Users',
+    invite: 'Invite User',
+    uid: 'UID (or email)',
+    role: 'Role',
+    roles: {
+      collaborator: 'Collaborator',
+      boss: 'Boss',
+    },
+    sendInvite: 'Invite',
+  },
   alert: 'Any project selected yet or any list with start state defined',
   limit: {
     seeLess: 'See less...',

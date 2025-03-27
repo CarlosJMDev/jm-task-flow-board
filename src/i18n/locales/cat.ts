@@ -46,6 +46,17 @@ export const cat = {
     endBoard: 'Marcar com a finalitzat',
     reopen: 'Reobrir projecte',
   },
+  users: {
+    add: 'Afegir Usuaris',
+    invite: 'Convidar Usuari',
+    uid: 'UID (o email)',
+    role: 'Rol',
+    roles: {
+      collaborator: 'Col·laborador',
+      boss: 'Cap',
+    },
+    sendInvite: 'Convidar',
+  },
   alert: 'Encara no s’ha seleccionat cap projecte o no hi ha llistes amb estat inicial definit',
   limit: {
     seeLess: 'Veure menys...',

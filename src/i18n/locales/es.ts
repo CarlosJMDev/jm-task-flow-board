@@ -46,6 +46,17 @@ export const es = {
     endBoard: 'Marcar como finalizado',
     reopen: 'Reabrir proyecto',
   },
+  users: {
+    add: 'Añadir Usuarios',
+    invite: 'Invitar Usuario',
+    uid: 'UID (o email)',
+    role: 'Rol',
+    roles: {
+      collaborator: 'Colaborador',
+      boss: 'Jefe',
+    },
+    sendInvite: 'Invitar',
+  },
   alert: 'Aún no se ha seleccionado ningún proyecto o no hay listas con estado inicial definido',
   limit: {
     seeLess: 'Ver menos...',
