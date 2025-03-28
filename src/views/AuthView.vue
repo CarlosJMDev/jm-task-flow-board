@@ -13,7 +13,7 @@ export default defineComponent({
     const signInWithGoogle = async () => {
       await userStore.loginWithGoogle()
       if (userStore.user) {
-        router.push('/BoardView')
+        router.push('/BoardView/1')
       }
     }
 
