@@ -12,9 +12,15 @@ import {
 } from 'firebase/firestore'
 import { db } from './firebaseConfig'
 import type { Board, List, Task, TaskState, UserData } from '@/types/index'
+import router from '@/router'
 
 export async function addBoard(boardId: string, boardData: Board): Promise<void> {
-  await setDoc(doc(db, 'boards', boardId), boardData)
+  try {
+    await setDoc(doc(db, 'boards', boardId), boardData)
+    router.push({ name: 'boardview', params: { id: boardId } })
+  } catch (error) {
+    console.error('Error adding board:', error)
+  }
 }
 
 export async function addList(boardId: string, listId: string, listData: List): Promise<void> {

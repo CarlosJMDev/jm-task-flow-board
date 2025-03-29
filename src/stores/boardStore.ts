@@ -30,6 +30,7 @@ export const useBoardStore = defineStore('board', {
         boardData.isFavorite = boardData.isFavorite || false
         boardData.isFinished = boardData.isFinished || false
         boardData.invitedUsers = boardData.invitedUsers || []
+        boardData.invitedUserEmails = [creatorEmail]
         if (!boardData.lists) {
           boardData.lists = [
             { listId: boardData.boardId + '_start', title: 'start', order: 1, tasks: [] },

@@ -31,6 +31,7 @@ export interface Board {
   lists?: List[]
   invitedUsers?: InvitedUser[]
   invitedUserEmails?: string[]
+  creationDate: Date
 }
 
 export interface UserData {
