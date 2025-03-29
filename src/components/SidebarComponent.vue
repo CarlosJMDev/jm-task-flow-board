@@ -135,7 +135,10 @@ const logout = (): void => {
               @click="selectBoard(board)"
               class="w-full p-2 rounded flex gap-3 cursor-pointer"
             >
-              <p v-if="isSidebarOpen">{{ board.title }}</p>
+              <!-- <p v-if="isSidebarOpen">{{ board.title }}</p> -->
+              <p v-if="isSidebarOpen">
+                {{ board.title.length > 18 ? board.title.substring(0, 21) + '...' : board.title }}
+              </p>
             </button>
             <button @click.stop="toggleFavorite(board)" class="p-1">
               <svg
@@ -211,7 +214,9 @@ const logout = (): void => {
               @click="selectBoard(board)"
               class="w-full p-2 hover:bg-light-desert-sand dark:hover:bg-dark-neptune rounded-xl flex gap-3 cursor-pointer"
             >
-              <p v-if="isSidebarOpen">{{ board.title }}</p>
+              <p v-if="isSidebarOpen">
+                {{ board.title.length > 20 ? board.title.substring(0, 23) + '...' : board.title }}
+              </p>
             </button>
             <button
               v-if="favoriteBoards.length > 3"
@@ -269,7 +274,9 @@ const logout = (): void => {
         >
           <template v-if="isSidebarOpen">
             <button @click="selectBoard(board)" class="w-full p-2 flex gap-3 cursor-pointer">
-              <p v-if="isSidebarOpen">{{ board.title }}</p>
+              <p v-if="isSidebarOpen">
+                {{ board.title.length > 20 ? board.title.substring(0, 23) + '...' : board.title }}
+              </p>
             </button>
             <button @click.stop="toggleFavorite(board)" class="p-1">
               <svg
