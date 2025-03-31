@@ -47,6 +47,8 @@ export const cat = {
     reopen: 'Reobrir projecte',
   },
   users: {
+    users: 'Usuaris',
+    creator: 'Creador',
     add: 'Afegir Usuaris',
     invite: 'Convidar Usuari',
     uid: 'UID (o email)',

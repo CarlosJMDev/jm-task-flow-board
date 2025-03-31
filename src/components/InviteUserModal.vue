@@ -38,7 +38,10 @@ const invite = async (): Promise<void> => {
       </div>
       <div class="mb-4">
         <label class="block text-sm font-medium mb-1">{{ i18n.t('users.role') }}</label>
-        <select v-model="role" class="w-full p-2 border rounded">
+        <select
+          v-model="role"
+          class="w-full p-2 border rounded bg-light-pastel-blue dark:bg-dark-fireflay"
+        >
           <option value="collaborator">{{ i18n.t('users.roles.collaborator') }}</option>
           <option value="boss">{{ i18n.t('users.roles.boss') }}</option>
         </select>

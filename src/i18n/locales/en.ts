@@ -47,6 +47,8 @@ export const en = {
     reopen: 'Reopen project',
   },
   users: {
+    users: 'Users',
+    creator: 'Creator',
     add: 'Add Users',
     invite: 'Invite User',
     uid: 'UID (or email)',

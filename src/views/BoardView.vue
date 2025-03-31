@@ -88,29 +88,32 @@ const onDragEnd = async (event: {
 
 <template>
   <BaseLayout>
-    <div class="max-w-[min(80%,1200px)] h-full flex flex-col">
+    <div class="max-w-[min(80%,1200px)] h-full flex flex-col justify-center items-center mx-auto">
       <header class="w-full p-4 border-b dark:text-white">
-        <h1 class="text-2xl font-bold">
+        <h1 class="text-2xl font-bold max-w-[40ch]">
           {{ currentBoard ? currentBoard.title : i18n.t('board.select') }}
         </h1>
-        <p class="text-light-black-coral dark:text-dark-iron">
+        <p class="text-light-black-coral dark:text-dark-iron max-w-[60ch]">
           {{ currentBoard ? currentBoard.description : '' }}
         </p>
       </header>
 
       <div v-if="currentBoard" class="p-4 flex justify-end gap-4">
-        <button @click="openCreateTaskModal" class="px-4 py-2 bg-green-600 text-white rounded">
+        <button
+          @click="openCreateTaskModal"
+          class="px-4 py-2 bg-light-opal dark:bg-dark-faded-jade text-black dark:text-white rounded cursor-pointer hover:scale-105 transition-transform duration-200 border border-light-black-coral dark:border-dark-iron"
+        >
           + {{ i18n.t('task.newTask') }}
         </button>
         <button
           @click="showInviteUserModal = true"
-          class="px-4 py-2 bg-green-600 text-white rounded"
+          class="px-4 py-2 bg-light-opal dark:bg-dark-faded-jade text-black dark:text-white rounded cursor-pointer hover:scale-105 transition-transform duration-200 border border-light-black-coral dark:border-dark-iron"
         >
           {{ i18n.t('users.add') }}
         </button>
       </div>
 
-      <main v-if="currentBoard" class="flex flex-col lg:flex-row gap-4 overflow-x-auto p-4">
+      <main v-if="currentBoard" class="flex flex-col lg:flex-row gap-4 overflow-x-auto p-4 w-96">
         <div
           v-for="list in boardLists"
           :key="list.listId"
@@ -167,37 +170,41 @@ const onDragEnd = async (event: {
             {{ i18n.t('task.empty') }}
           </div>
         </div>
-        <!-- Sección de usuarios invitados (sólo se muestra si hay invitados) -->
-        <div
-          v-if="currentBoard && currentBoard.invitedUsers && currentBoard.invitedUsers.length"
-          class="p-4 border-t mt-4"
-        >
-          <!-- <h3 class="text-lg font-bold mb-2">{{ i18n.t('board.invitedUsers') }}</h3> -->
-          <h3 class="text-lg font-bold mb-2">Users</h3>
-          <ul>
-            <li
-              v-for="invited in currentBoard.invitedUsers"
-              :key="invited.userId"
-              class="flex items-center gap-2"
-            >
-              <span
-                >{{ invited.userId }} - <em>{{ invited.role }}</em></span
-              >
-              <!-- Si el usuario actual es el creador, permite cambiar el rol -->
-              <template v-if="currentBoard.creatorId === userStore.user?.uid">
-                <select
-                  v-model="invited.role"
-                  @change="changeInvitedRole(invited, invited.role)"
-                  class="border rounded p-1"
-                >
-                  <option value="collaborator">{{ i18n.t('board.collaborator') }}</option>
-                  <option value="boss">{{ i18n.t('board.boss') }}</option>
-                </select>
-              </template>
-            </li>
-          </ul>
-        </div>
       </main>
+      <!-- Sección de usuarios invitados (sólo se muestra si hay invitados) -->
+      <div
+        v-if="currentBoard && currentBoard.invitedUsers"
+        class="p-4 border-t mt-4 dark:text-white"
+      >
+        <h3 class="text-lg font-bold mb-2">{{ i18n.t('users.users') }}</h3>
+        <ul>
+          <li>
+            {{ currentBoard.creatorId.replace('@gmail.com', '') }} -
+            <span class="font-bold italic">{{ i18n.t('users.creator') }}</span>
+          </li>
+          <li
+            v-for="invited in currentBoard.invitedUsers"
+            :key="invited.userId"
+            class="flex flex-col sm:flex-row items-center gap-2"
+          >
+            <span
+              >{{ invited.userId.replace('@gmail.com', '') }} -
+              <em class="font-bold italic">{{ i18n.t(`users.roles.${invited.role}`) }}</em></span
+            >
+            <!-- Si el usuario actual es el creador, permite cambiar el rol -->
+            <template v-if="currentBoard.creatorId === userStore.user?.email">
+              <select
+                v-model="invited.role"
+                @change="changeInvitedRole(invited, invited.role)"
+                class="border rounded p-1 bg-light-pastel-blue dark:bg-dark-fireflay"
+              >
+                <option value="collaborator">{{ i18n.t('users.roles.collaborator') }}</option>
+                <option value="boss">{{ i18n.t('users.roles.boss') }}</option>
+              </select>
+            </template>
+          </li>
+        </ul>
+      </div>
       <p v-else class="p-4 dark:text-dark-iron">
         {{ i18n.t('board.selectSidebar') }}
       </p>
@@ -205,16 +212,16 @@ const onDragEnd = async (event: {
 
     <div v-if="currentBoard" class="p-4 flex justify-end gap-2">
       <button
-        v-if="!currentBoard.isFinished"
+        v-if="!currentBoard.isFinished && currentBoard.creatorId === userStore.user?.email"
         @click="boardStore.updateBoard(currentBoard.boardId, { isFinished: true })"
-        class="px-4 py-2 bg-blue-600 text-white rounded"
+        class="px-4 py-2 bg-light-opal dark:bg-dark-faded-jade text-black dark:text-white rounded cursor-pointer hover:scale-105 transition-transform duration-200 border border-light-black-coral dark:border-dark-iron"
       >
         {{ i18n.t('board.endBoard') }}
       </button>
       <button
-        v-else
+        v-if="currentBoard.isFinished && currentBoard.creatorId === userStore.user?.email"
         @click="boardStore.updateBoard(currentBoard.boardId, { isFinished: false })"
-        class="px-4 py-2 bg-gray-600 text-white rounded"
+        class="px-4 py-2 bg-light-opal dark:bg-dark-faded-jade text-black dark:text-white rounded cursor-pointer hover:scale-105 transition-transform duration-200 border border-light-black-coral dark:border-dark-iron"
       >
         {{ i18n.t('board.reopen') }}
       </button>
