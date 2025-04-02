@@ -39,10 +39,7 @@ export async function addTask(
 export async function getBoards(email: string): Promise<Board[]> {
   const boardsCol = collection(db, 'boards')
 
-  const q = query(
-    boardsCol,
-    or(where('creatorId', '==', email), where('invitedUserEmails', 'array-contains', email)),
-  )
+  const q = query(boardsCol, where('invitedUserEmails', 'array-contains', email))
 
   const boardSnapshot = await getDocs(q)
   const boards: Board[] = []

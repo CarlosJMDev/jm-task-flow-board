@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, inject } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '../stores/userStore'
+import { useUserStore } from '@/stores/userStore'
 
 export default defineComponent({
   name: 'AuthView',

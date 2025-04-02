@@ -21,7 +21,7 @@ export const useBoardStore = defineStore('board', {
     async createBoard(boardData: Board): Promise<void> {
       try {
         const userStore = useUserStore()
-        const creatorEmail = userStore.user?.email
+        const creatorEmail = userStore.user?.email?.toLowerCase().trim()
         if (!creatorEmail) {
           throw new Error('No hay usuario autenticado.')
         }
@@ -56,7 +56,7 @@ export const useBoardStore = defineStore('board', {
           console.error('Usuario no autenticado.')
           return
         }
-        const boardsData: Board[] = await getBoards(email)
+        const boardsData: Board[] = await getBoards(email.toLowerCase().trim())
         await Promise.all(
           boardsData.map(async (board) => {
             board.isFavorite = board.isFavorite || false

@@ -22,7 +22,9 @@ const boardStore = useBoardStore()
 
 onAuthStateChanged(auth, (user) => {
   userStore.user = user
-  if (user) void boardStore.loadBoards(user.email!)
+  if (user && user.email) {
+    void boardStore.loadBoards(user.email!)
+  }
   router.push('/BoardView/1')
   console.log('push: ', router.currentRoute.value.fullPath)
 })
