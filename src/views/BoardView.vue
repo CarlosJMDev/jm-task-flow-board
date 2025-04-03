@@ -113,7 +113,10 @@ const onDragEnd = async (event: {
         </button>
       </div>
 
-      <main v-if="currentBoard" class="flex flex-col lg:flex-row gap-4 overflow-x-auto p-4 w-96">
+      <main
+        v-if="currentBoard"
+        class="flex flex-col lg:flex-row gap-4 overflow-x-auto p-4 w-96 sm:w-full"
+      >
         <div
           v-for="list in boardLists"
           :key="list.listId"
