@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import { useBoardStore } from '@/stores/boardStore'
 import { useRouter } from 'vue-router'
-import type { Board } from '@/types/board'
+import type { Board } from '@/types/index'
 
 const boardStore = useBoardStore()
 const router = useRouter()

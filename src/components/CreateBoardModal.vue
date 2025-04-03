@@ -2,12 +2,14 @@
 import { ref, inject } from 'vue'
 import { useBoardStore } from '@/stores/boardStore'
 import type { Board } from '@/types/index'
+import { useUserStore } from '@/stores/userStore'
 
 const i18n = inject('i18n') as { t: (key: string) => string; locale: string }
 
 const emit = defineEmits<{ (e: 'closeModal'): void }>()
 
 const boardStore = useBoardStore()
+const userStore = useUserStore()
 
 const title = ref('')
 const description = ref('')
@@ -17,12 +19,20 @@ const closeModal = () => {
 }
 
 const submitForm = async () => {
+  const userId = userStore.user?.email
+  if (!userId) {
+    console.error('User ID is not available')
+    return
+  }
   const boardId = Date.now().toString()
   const newBoard: Board = {
     boardId,
     title: title.value,
     description: description.value,
     creationDate: new Date(),
+    isFavorite: false,
+    isFinished: false,
+    creatorId: userId,
   }
   await boardStore.createBoard(newBoard)
   closeModal()

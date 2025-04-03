@@ -60,7 +60,7 @@ const onDragEnd = async (event: {
   from: HTMLElement
   to: HTMLElement
   item: HTMLElement
-}): void => {
+}): Promise<void> => {
   const { from, to, item } = event
   if (from !== to) {
     const fromListId = from.getAttribute('data-list-id') || ''
