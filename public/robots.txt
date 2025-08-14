@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /
+
+User-agent: Googlebot
+allow: /
+
+Sitemap: https://jm-task-flow-board-549ac.web.app/BoardView/
