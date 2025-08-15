@@ -344,6 +344,7 @@ const logout = (): void => {
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
+          <p class="sr-only">{{ i18n.t('sidebar.logout') }}</p>
           <p v-if="isSidebarOpen">{{ i18n.t('sidebar.logout') }}</p>
         </button>
       </div>
