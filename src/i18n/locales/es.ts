@@ -65,4 +65,5 @@ export const es = {
     seeMore: 'Ver más...',
   },
   footer: 'Hecho en Vuejs con 💚',
+  jmdev: 'Ver más proyectos de JMDev',
 }

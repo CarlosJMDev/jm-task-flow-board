@@ -65,4 +65,5 @@ export const en = {
     seeMore: 'See more...',
   },
   footer: 'Made in Vuejs with 💚',
+  jmdev: 'See more projects by JMDev',
 }

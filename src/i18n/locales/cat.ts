@@ -65,4 +65,5 @@ export const cat = {
     seeMore: 'Veure més...',
   },
   footer: 'Fet amb Vuejs amb 💚',
+  jmdev: 'Veure més projectes de JMDev',
 }
